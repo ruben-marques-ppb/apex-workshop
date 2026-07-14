@@ -135,6 +135,9 @@ If no food is visible, respond with {"items": []}.
 4. **Frontend UX** ✅ — dropzone, preview, client-side downscale, Analyze
    button, results table, disclaimer, error banner per error enum.
 5. **Polish** 🚧 — remaining tuning work below.
+6. **History (v2)** ✅ — `localStorage` persistence, History tab with table, view-details
+   modal, delete + clear-all, thumbnail (≤256px JPEG), quota-eviction with toast,
+   unit tests for storage helpers (`client/src/__tests__/history.test.ts`).
 
 ## Next steps (post-scaffold tuning)
 
