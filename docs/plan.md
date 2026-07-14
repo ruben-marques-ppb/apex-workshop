@@ -124,14 +124,30 @@ If no food is visible, respond with {"items": []}.
 
 ## Milestones
 
-1. **Scaffold** — repo skeleton, Vite client, Express server, `npm run dev`
+1. **Scaffold** ✅ — repo skeleton, Vite client, Express server, `npm run dev`
    at the root runs both via `concurrently`. Health-check endpoint returns 200.
-2. **USDA pipeline** — `scripts/download-usda.sh`, `server/src/usda.ts` loads
+2. **USDA pipeline** ✅ — `scripts/download-usda.sh`, `server/src/usda.ts` loads
    the JSON, builds a Fuse.js index, exports a `lookupCalories(name)` fn.
-   Add a `node:test` unit test covering happy path and no-match.
-3. **Ollama integration** — `/api/analyze` end-to-end using a hard-coded local
-   test image. Verifies prompt, JSON parsing, retry, error mapping.
-4. **Frontend UX** — dropzone, preview, downscale, Analyze button, results
-   table, disclaimer, error banner for each error enum value.
-5. **Polish** — loading spinner, empty states, README setup steps verified by
-   following them from a clean clone.
+   `node:test` unit tests cover happy path and no-match (4 passing).
+3. **Ollama integration** ✅ — `/api/analyze` end-to-end. Verified live with
+   Qwen2.5-VL 3B: ~3s round-trip on a small image, JSON parsing works,
+   `no_food_detected` path works.
+4. **Frontend UX** ✅ — dropzone, preview, client-side downscale, Analyze
+   button, results table, disclaimer, error banner per error enum.
+5. **Polish** 🚧 — remaining tuning work below.
+
+## Next steps (post-scaffold tuning)
+
+- **Fuse.js threshold + filtering.** Current `threshold: 0.4` produces
+  surprising matches (observed: "cola" → "white chocolate"). Options:
+  tighten threshold to ~0.3, weight by description length, or pre-filter
+  the SR Legacy corpus to a curated subset (drop obscure branded entries).
+- **VLM output stability.** Watch how often the model wraps JSON in code
+  fences or adds prose despite `format: 'json'`. If frequent, tune the
+  prompt further; if rare, current single-retry is fine.
+- **Loading feedback.** First inference is 5–15s (model warmup). Consider a
+  progress hint or a warmup ping on server boot.
+- **README verification pass.** Follow the setup steps from a clean clone
+  on a second machine to catch missing docs.
+- **Optional v2 ideas** (per [decisions.md](decisions.md)): editable rows,
+  embeddings-based matching, multi-item cropping preview.
