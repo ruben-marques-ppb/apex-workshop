@@ -1,0 +1,16 @@
+{
+  "name": "apex-workshop",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Calorie counter from a food photo — local vision LLM + USDA lookup",
+  "scripts": {
+    "dev": "concurrently -n server,client -c blue,magenta \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
+    "build": "npm --prefix server run build && npm --prefix client run build",
+    "test": "npm --prefix server test",
+    "install:all": "npm install && npm --prefix server install && npm --prefix client install",
+    "data:download": "bash scripts/download-usda.sh"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}
