@@ -14,7 +14,7 @@ const mockLocalStorage = {
   },
   setItem(key: string, value: string): void {
     if (_quotaError) {
-      const err = new DOMException('QuotaExceededError', 'QuotaExceededError');
+      const err = new DOMException('Storage quota exceeded', 'QuotaExceededError');
       throw err;
     }
     _store.set(key, value);
@@ -140,7 +140,7 @@ describe('history storage helpers', () => {
       mockLocalStorage.setItem = function (key: string, value: string) {
         if (callCount === 0) {
           callCount++;
-          const err = new DOMException('QuotaExceededError', 'QuotaExceededError');
+          const err = new DOMException('Storage quota exceeded', 'QuotaExceededError');
           throw err;
         }
         return original(key, value);
@@ -153,7 +153,10 @@ describe('history storage helpers', () => {
       mockLocalStorage.setItem = original;
 
       assert.equal(result.ok, false);
-      if (!result.ok) assert.equal(result.warning, 'quota_exceeded');
+      if (!result.ok) {
+        assert.equal(result.warning, 'quota_exceeded');
+        assert.equal(result.dropped, 1);
+      }
 
       // oldest (old1) should have been dropped to make room
       const stored = getEntries();

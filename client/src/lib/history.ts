@@ -12,7 +12,7 @@ export type HistoryEntry = {
   warnings: string[];
 };
 
-export type AddEntryResult = { ok: true } | { ok: false; warning: 'quota_exceeded' };
+export type AddEntryResult = { ok: true } | { ok: false; warning: 'quota_exceeded'; dropped: number };
 
 export function getEntries(): HistoryEntry[] {
   try {
@@ -34,9 +34,9 @@ export function addEntry(entry: HistoryEntry): AddEntryResult {
   while (entries.length > 0) {
     try {
       saveEntries(entries);
-      return dropped > 0 ? { ok: false, warning: 'quota_exceeded' } : { ok: true };
+      return dropped > 0 ? { ok: false, warning: 'quota_exceeded', dropped } : { ok: true };
     } catch (err) {
-      const name = err instanceof Error ? (err as DOMException).name : '';
+      const name = err instanceof DOMException ? err.name : '';
       if (name === 'QuotaExceededError' && entries.length > 1) {
         entries.pop();
         dropped++;
@@ -45,7 +45,7 @@ export function addEntry(entry: HistoryEntry): AddEntryResult {
       }
     }
   }
-  return { ok: false, warning: 'quota_exceeded' };
+  return { ok: false, warning: 'quota_exceeded', dropped };
 }
 
 export function deleteEntry(id: string): void {

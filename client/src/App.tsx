@@ -27,11 +27,11 @@ export default function App() {
   const [tab, setTab] = useState<Tab>('analyze');
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
   const [history, setHistory] = useState<HistoryEntry[]>(() => getEntries());
-  const [quotaWarning, setQuotaWarning] = useState(false);
+  const [quotaWarning, setQuotaWarning] = useState<number>(0);
 
   useEffect(() => {
     if (!quotaWarning) return;
-    const id = setTimeout(() => setQuotaWarning(false), 5000);
+    const id = setTimeout(() => setQuotaWarning(0), 5000);
     return () => clearTimeout(id);
   }, [quotaWarning]);
 
@@ -59,7 +59,7 @@ export default function App() {
         warnings: result.data.warnings,
       };
       const saved = addEntry(entry);
-      if (!saved.ok) setQuotaWarning(true);
+      if (!saved.ok) setQuotaWarning(saved.dropped);
       setHistory(getEntries());
     }
   }, [status]);
@@ -116,9 +116,9 @@ export default function App() {
         </button>
       </nav>
 
-      {quotaWarning && (
+      {quotaWarning > 0 && (
         <div className="rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-sm px-4 py-2.5">
-          ⚠ Storage quota reached — oldest entries were removed to make room.
+          ⚠ Storage quota reached — {quotaWarning} oldest {quotaWarning === 1 ? 'entry was' : 'entries were'} removed to make room.
         </div>
       )}
 
