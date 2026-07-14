@@ -25,6 +25,7 @@ function foodSummary(entry: HistoryEntry): string {
 export function HistoryTable({ entries, onDelete, onClearAll }: Props) {
   const [selected, setSelected] = useState<HistoryEntry | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   if (entries.length === 0) {
     return (
@@ -96,19 +97,37 @@ export function HistoryTable({ entries, onDelete, onClearAll }: Props) {
                   {entry.totalKcal}
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <span className="inline-flex gap-3">
+                  <span className="inline-flex gap-3 items-center">
                     <button
                       onClick={() => setSelected(entry)}
                       className="text-indigo-600 hover:text-indigo-700 font-medium"
                     >
                       View
                     </button>
-                    <button
-                      onClick={() => onDelete(entry.id)}
-                      className="text-red-500 hover:text-red-600 font-medium"
-                    >
-                      Delete
-                    </button>
+                    {confirmDeleteId !== entry.id ? (
+                      <button
+                        onClick={() => setConfirmDeleteId(entry.id)}
+                        className="text-red-500 hover:text-red-600 font-medium"
+                      >
+                        Delete
+                      </button>
+                    ) : (
+                      <span className="inline-flex gap-2 items-center text-xs">
+                        <span className="text-slate-600">Sure?</span>
+                        <button
+                          onClick={() => { onDelete(entry.id); setConfirmDeleteId(null); }}
+                          className="text-red-600 hover:text-red-700 font-medium"
+                        >
+                          Yes
+                        </button>
+                        <button
+                          onClick={() => setConfirmDeleteId(null)}
+                          className="text-slate-500 hover:text-slate-700 font-medium"
+                        >
+                          Cancel
+                        </button>
+                      </span>
+                    )}
                   </span>
                 </td>
               </tr>
