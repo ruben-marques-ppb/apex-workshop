@@ -40,13 +40,27 @@ prompt, and does USDA lookup / calorie math.
 that adds no learning value for this workshop and blocks the interesting
 part (image → calories). Can be added later without redesigning the domain.
 
-## 5. Scope: image → calories only, no tracking
+## 5. Scope: image → calories only, no tracking (v1) → history added (v2)
 
 **Options:** core CRUD calorie log · goals · history · macros · custom foods
-**Chosen:** *none of the above*. App is stateless: photo in → totals out.
-**Why:** User explicitly narrowed scope to "identify food elements and total
+**v1 chosen:** *none of the above*. App is stateless: photo in → totals out.
+**Why (v1):** User explicitly narrowed scope to "identify food elements and total
 calories from a food photo." This eliminates the DB, auth, log UI, history
 UI, and >50% of the code we'd otherwise write.
+
+**v2 scope expansion (issue #1):** Client-side `localStorage` history added per
+user request. Stays true to the "fully local, no accounts, no backend DB"
+principle — history lives in the browser only and survives page reloads. Cross-
+device sync and CSV export remain explicitly out of scope.
+
+## 14. History persistence: localStorage (client-only)
+
+**Options:** localStorage · IndexedDB · backend SQLite · no history
+**Chosen:** localStorage.
+**Why:** Simplest API that satisfies "offline, no accounts, no backend." Entries
+are small after JPEG thumbnail downscaling (≤256px, q=0.75). QuotaExceededError
+is handled by evicting oldest entries. IndexedDB would be more robust at scale
+but adds async complexity for a feature that's secondary to the core flow.
 
 ## 6. Recognition approach: Ollama VLM (Qwen2.5-VL 3B)
 
